@@ -24,7 +24,7 @@ const whatWouldYouLikeToDo = () => {
             name: 'whatWouldYouLikeToDo',
             message: 'What would you like to do?',
             type: "list",
-            choices: ["Add Department", "Add Role", 'Add Employee'];
+            choices: ["Add Department", "Add Role", 'Add Employee']
         }
     ]).then((ans) => {
         if(ans.whatWouldYouLikeToDo === "Add Department"){
@@ -34,7 +34,7 @@ const whatWouldYouLikeToDo = () => {
                     message: "What is the name of the department?",
                     type: "input"
                 }.then((ans) => {
-                    const query = `INSERT INTO department(${ans});`;
+                    const query = `INSERT INTO department(name) VALUES ${ans};`;
                     db.query(query, (err, result) => {
                         if(err){
                             return res.json(err)
@@ -43,6 +43,32 @@ const whatWouldYouLikeToDo = () => {
                     })
                 })
             ])
+        }else if(ans.whatWouldYouLikeToDo === "Add Role"){
+            inquirer.prompt([
+                {
+                    name: "nameOfRole",
+                    message: "What is the name of the role?",
+                    type: 'input'
+                }
+            ]).then((ans) => {
+                const query = `INSERT INTO role(title) VALUES ${ans};`;
+                db.query(query, (err, result) => {
+                    if(err){
+                        return res.json(err)
+                    }
+                    res.json(result);
+                })
+            }).then(() => {
+                inquirer.prompt([
+                    {
+                        name: "roleSalary",
+                        message: "What is the salary of the role?",
+                        type: "number"
+                    }
+                ]).then((ans) => {
+                    const query = `INSERT INTO role(salary) VALUES ${ans};`;
+                })
+            })
         }
     })
 }
