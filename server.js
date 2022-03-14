@@ -67,6 +67,30 @@ const whatWouldYouLikeToDo = () => {
                     }
                 ]).then((ans) => {
                     const query = `INSERT INTO role(salary) VALUES ${ans};`;
+
+                    db.query(query, (err, result) => {
+                        if(err){
+                            return res.json(err)
+                        }
+                        res.json(result)
+                    })
+                }).then(() => {
+                    inquirer.prompt([
+                        {
+                            name: "department",
+                            message: "What department does this role belong to?",
+                            type: "number"
+                        }
+                    ]).then((ans) => {
+                        const query = `INSERT INTO role(department_id) VALUES ${ans};`;
+
+                        db.query(query, (err, result) => {
+                            if(err){
+                                return res.json(err)
+                            }
+                            res.json(result)
+                        })
+                    })
                 })
             })
         }
