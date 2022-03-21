@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mysql = require("mysql2")
 const express = require("express")
-const console = require('console.table')
+const cTable = require('console.table')
 const inquirer = require('inquirer');
 const res = require('express/lib/response');
 
@@ -9,90 +9,72 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json())
+app.use(express.json());
 
 const db = mysql.createConnection({
     host: 'localhost',
     user: process.env.MYSQL_USERNAME,
     password: process.env.MYSQL_PASSWORD,
     database: 'employees_db',
+    },
+
+);
+
+db.connect((err) => {
+    if (err) throw err;
+    // call function to initiate here
+    pickSomething();
 });
 
-const whatWouldYouLikeToDo = () => {
+function pickSomething() {
     inquirer.prompt([
         {
-            name: 'whatWouldYouLikeToDo',
-            message: 'What would you like to do?',
-            type: "list",
-            choices: ["Add Department", "Add Role", 'Add Employee']
+            type: 'list',
+            choices: ['View all Departments',
+                'View all roles',
+                'View all employees',
+                'Add a department',
+                'Add a role',
+                'Add employee',
+                'Update employee role',
+                'Done!'
+            ],
+            name: 'pick',
+            message: "Choose one of the following"
         }
     ]).then((ans) => {
-        if(ans.whatWouldYouLikeToDo === "Add Department"){
-            inquirer.prompt([
-                {
-                    name: "nameOfDepartment",
-                    message: "What is the name of the department?",
-                    type: "input"
-                }.then((ans) => {
-                    const query = `INSERT INTO department(name) VALUES ${ans};`;
-                    db.query(query, (err, result) => {
-                        if(err){
-                            return res.json(err)
-                        }
-                        res.json(result);
-                    })
-                })
-            ])
-        }else if(ans.whatWouldYouLikeToDo === "Add Role"){
-            inquirer.prompt([
-                {
-                    name: "nameOfRole",
-                    message: "What is the name of the role?",
-                    type: 'input'
-                }
-            ]).then((ans) => {
-                const query = `INSERT INTO role(title) VALUES ${ans};`;
-                db.query(query, (err, result) => {
-                    if(err){
-                        return res.json(err)
-                    }
-                    res.json(result);
-                })
-            }).then(() => {
-                inquirer.prompt([
-                    {
-                        name: "roleSalary",
-                        message: "What is the salary of the role?",
-                        type: "number"
-                    }
-                ]).then((ans) => {
-                    const query = `INSERT INTO role(salary) VALUES ${ans};`;
-
-                    db.query(query, (err, result) => {
-                        if(err){
-                            return res.json(err)
-                        }
-                        res.json(result)
-                    })
-                }).then(() => {
-                    inquirer.prompt([
-                        {
-                            name: "department",
-                            message: "What department does this role belong to?",
-                            type: "number"
-                        }
-                    ]).then((ans) => {
-                        const query = `INSERT INTO role(department_id) VALUES ${ans};`;
-
-                        db.query(query, (err, result) => {
-                            if(err){
-                                return res.json(err)
-                            }
-                            res.json(result)
-                        })
-                    })
-                })
-            })
+        switch (ans.pickSomething){
+            case 'View all Departments':
+                // initiate viewing departments
+                break;
+            case 'View all roles':
+                // initiate viewing roles
+                break;
+            case 'View all employees':
+                // initiate viewing employees
+                break;
+            case 'Add a department':
+                // initiate adding a department
+                break;
+            case 'Add a role':
+                // initiate adding a role
+                break;
+            case 'Add employee':
+                // initiate adding and employee
+                break;
+            case 'Update employee role':
+                // initiate update
+                break;
+            case 'Done!':
+                // initiate done 
+                break;
         }
-    })
-}
+    });
+};
+
+
+
+
+app.listen(PORT, () => {
+    console.log(`You are now listening on port ${PORT}`);
+});
