@@ -4,6 +4,7 @@ const express = require("express")
 const cTable = require('console.table')
 const inquirer = require('inquirer');
 const res = require('express/lib/response');
+const { type } = require('express/lib/response');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -69,9 +70,11 @@ function pickSomething() {
                 // initiate adding and employee
                 break;
             case 'Update employee role':
+                updateEmployee();
                 // initiate update
                 break;
             case 'Done!':
+                done();
                 // initiate done 
                 break;
         }
@@ -186,6 +189,38 @@ const addEmployee = () => {
             pickSomething();
         })
     })
+}
+const updateEmployee = () => {
+    let query1 = `SELECT * FROM employee;`;
+    db.query(query1, (err,res) => {
+        if(err) throw err;
+        console.table('            ',res);
+    })
+    inquirer.prompt([
+        {
+            type: 'number',
+            name: 'id',
+            message: 'Enter the ID of the employee that you would like to make changes too'
+        },
+        {
+            type: 'number',
+            name: 'newrole',
+            message: 'Enter the role ID of the employee that you would like to make changes to'
+        }
+    ]).then((ans) => {
+        let query2 = `UPDATE employee SET role_id = (?) WHERE employee.id = (?);`;
+        db.query(query2, [ans.newrole, ans.id], (err, res) => {
+            if (err) throw err;
+            console.log(res);
+            pickSomething();
+        })
+    })
+}
+
+const done = () => {
+    console.log('Bye now!');
+    db.end();
+    process.exit();
 }
 
 app.listen(PORT, () => {
