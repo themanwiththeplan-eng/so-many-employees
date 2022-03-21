@@ -65,6 +65,7 @@ function pickSomething() {
                 // initiate adding a role
                 break;
             case 'Add employee':
+                addEmployee();
                 // initiate adding and employee
                 break;
             case 'Update employee role':
@@ -146,6 +147,40 @@ const addRole = () => {
     ]).then((ans) => {
         let query = `INSERT INTO role(title, salary, department_id)  VALUES (?, ?, ?);`;
         db.query(query, [ans.role, ans.salary, ans.dept], (err,res) => {
+            if (err) throw err;
+            console.log(res);
+            pickSomething();
+        })
+    })
+}
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'What is the employees first name?'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'What is the employees last name?'
+        },
+        {
+            type: 'input',
+            name: 'roleId',
+            message: 'What is the employees role ID?'
+        },
+        {
+            type: 'input',
+            name: 'managerId',
+            message: 'If this employee has a manger, what is their ID? If not, set this to 0.'
+        }
+    ]).then((ans) => {
+        if(ans.managerId === ''){
+            ans.managerId === null;
+        }
+        let query = `INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);`;
+        db.query(query, [ans.firstName, ans.lastName, ans.roleId, ans.managerId], (err, res) => {
             if (err) throw err;
             console.log(res);
             pickSomething();
